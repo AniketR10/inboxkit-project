@@ -1,4 +1,5 @@
-import { Navbar } from "./components/Navbar";
+import { Navbar } from "@/components/Navbar";
+import { CreateForm } from "@/actions/create-form";
 
 export default function Home() {
   return (
@@ -34,14 +35,8 @@ export default function Home() {
             <p className="text-lg font-bold">No boards found</p>
             <p className="text-sm text-neutral-500 mb-6">Start by creating your first workspace</p>
             
+            <CreateForm />
             
-              <button 
-                type="submit"
-                className="w-full px-6 py-3 bg-accent text-white font-bold border-2 border-black shadow-neo hover:bg-highlight hover:text-black transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
-              >
-                Create Board
-              </button>
-           
           </div>
         </div>
       </main>
