@@ -4,31 +4,66 @@ import Link from "next/link";
 import prisma from "@/lib/db";
 import { Navbar } from "@/components/Navbar";
 import { CreateForm } from "@/components/create-form";
+import { SearchInput } from "@/components/search-input";
 
-export default async function Home() {
+interface HomeProps {
+  searchParams?: {
+    query?: string;
+    page?: string;
+  };
+}
+
+export default async function Home({ searchParams }: HomeProps) {
   const { userId, orgId } = await auth();
 
   if (!userId) {
     redirect("/");
   }
 
-  // 1. Fetch the boards for the current user
+  // ✅ Unwrap ONCE
+  const params = await searchParams;
+
+  const query = params?.query || "";
+  const page = Number(params?.page) || 1;
+
+  const PAGE_SIZE = 8;
+
   const boards = await prisma.board.findMany({
     where: {
-      orgId: orgId || userId, // Match boards created by this user
+      orgId: orgId || userId,
+      title: {
+        contains: query,
+        mode: "insensitive",
+      },
     },
     orderBy: {
-      createdAt: "desc", // Newest first
+      createdAt: "desc",
+    },
+    take: PAGE_SIZE,
+    skip: (page - 1) * PAGE_SIZE,
+  });
+
+  const totalBoards = await prisma.board.count({
+    where: {
+      orgId: orgId || userId,
+      title: {
+        contains: query,
+        mode: "insensitive",
+      },
     },
   });
+
+  const totalPages = Math.ceil(totalBoards / PAGE_SIZE);
+  const hasNextPage = page < totalPages;
+  const hasPrevPage = page > 1;
 
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
 
       <main className="pt-20 md:pt-32 px-4 max-w-6xl mx-auto pb-20">
-        {/* Header Section */}
-        <div className="flex flex-col items-center justify-center space-y-6 text-center">
+        
+        <div className="flex flex-col items-center justify-center space-y-6 text-center mb-16">
           <div className="bg-highlight text-black border-2 border-black px-4 py-1 font-bold shadow-neo transform -rotate-2">
             TASK MANAGEMENT SIMPLIFIED
           </div>
@@ -40,20 +75,21 @@ export default async function Home() {
           </p>
         </div>
 
-        {/* Boards Section */}
-        <div className="mt-16">
-          <div className="flex items-center justify-between mb-8 border-b-2 border-black pb-2">
-            <h2 className="text-2xl font-bold text-black flex items-center gap-2">
-              Your Boards
-              <span className="w-3 h-3 bg-accent border border-black rounded-full"></span>
-            </h2>
-          </div>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 border-b-2 border-black pb-6">
+          <h2 className="text-2xl font-bold text-black flex items-center gap-2">
+            Your Boards
+            <span className="w-3 h-3 bg-accent border border-black rounded-full"></span>
+          </h2>
 
-          {/* CONDITIONAL RENDERING: Logic to show boards or empty state */}
-          {boards.length > 0 ? (
+          <div className="w-full md:w-72">
+            <SearchInput placeholder="Search your boards..." />
+          </div>
+        </div>
+
+        {boards.length > 0 ? (
+          <div className="space-y-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               
-              {/* 2. Map through existing boards */}
               {boards.map((board) => (
                 <Link
                   key={board.id}
@@ -64,37 +100,90 @@ export default async function Home() {
                     {board.title}
                   </div>
                   <div className="text-xs font-bold text-neutral-400 group-hover:text-black">
-                    {new Date(board.createdAt).toLocaleDateString()}
+                    Created {new Date(board.createdAt).toLocaleDateString()}
                   </div>
                 </Link>
               ))}
 
-              {/* 3. A "Create New" Card that sits in the grid */}
-              <div className="h-32 border-2 border-dashed border-black bg-neutral-100 p-4 flex flex-col items-center justify-center gap-2 opacity-70 hover:opacity-100 transition-opacity">
-                 <p className="text-xs font-bold">Create another board below</p>
-                 <div className="w-6 h-6 border-2 border-black rounded-full flex items-center justify-center font-bold">↓</div>
+              {page === 1 && !query && (
+                <div className="h-32 border-2 border-dashed border-black bg-neutral-100 p-4 flex flex-col items-center justify-center gap-2 opacity-70">
+                  <p className="text-xs font-bold text-center">
+                    Use the form below to create more
+                  </p>
+                  <div className="w-6 h-6 border-2 border-black rounded-full flex items-center justify-center font-bold">
+                    ↓
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-x-6 py-4">
+                <Link
+                  href={`/?query=${query}&page=${page - 1}`}
+                  className={`px-4 py-2 bg-white border-2 border-black shadow-sm font-bold text-sm ${
+                    !hasPrevPage
+                      ? "opacity-50 pointer-events-none"
+                      : "hover:shadow-neo hover:-translate-y-0.5 transition-all"
+                  }`}
+                >
+                  ← Previous
+                </Link>
+
+                <span className="font-black text-lg">
+                  Page {page} of {totalPages}
+                </span>
+
+                <Link
+                  href={`/?query=${query}&page=${page + 1}`}
+                  className={`px-4 py-2 bg-white border-2 border-black shadow-sm font-bold text-sm ${
+                    !hasNextPage
+                      ? "opacity-50 pointer-events-none"
+                      : "hover:shadow-neo hover:-translate-y-0.5 transition-all"
+                  }`}
+                >
+                  Next →
+                </Link>
               </div>
-
-            </div>
-          ) : (
-            /* EMPTY STATE: Only shown if 0 boards exist */
-            <div className="h-64 flex flex-col items-center justify-center border-2 border-black border-dashed bg-white p-10">
-              <p className="text-lg font-bold">No boards found</p>
-              <p className="text-sm text-neutral-500 mb-6">
-                Start by creating your first workspace
-              </p>
-              <CreateForm />
-            </div>
-          )}
-
-          {/* Always show the Create Form at the bottom if boards exist, so user can add more */}
-          {boards.length > 0 && (
-            <div className="mt-12 flex flex-col items-center border-t-2 border-black/10 pt-8">
-                <h3 className="font-bold text-lg mb-4">Create a New Board</h3>
+            )}
+          </div>
+        ) : (
+          <div className="h-64 flex flex-col items-center justify-center border-2 border-black border-dashed bg-white p-10">
+            {query ? (
+              <>
+                <p className="text-lg font-bold">
+                  No boards match "{query}"
+                </p>
+                <Link
+                  href="/"
+                  className="text-sm text-accent underline mt-2 font-bold"
+                >
+                  Clear Search
+                </Link>
+              </>
+            ) : (
+              <>
+                <p className="text-lg font-bold">No boards found</p>
+                <p className="text-sm text-neutral-500 mb-6">
+                  Start by creating your first workspace
+                </p>
                 <CreateForm />
-            </div>
-          )}
+              </>
+            )}
+          </div>
+        )}
+
+        {!query && (
+        <div className="flex flex-col items-center justify-center mt-20">
+          <h3 className="font-bold text-xl mb-6 bg-white px-6 py-2 border-2 border-black shadow-neo -translate-x-16">
+            Create a New Board
+          </h3>
+
+          <div className="w-full max-w-md">
+            <CreateForm />
+          </div>
         </div>
+      )}
       </main>
     </div>
   );
