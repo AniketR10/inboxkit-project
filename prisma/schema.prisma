@@ -50,7 +50,7 @@ model Task {
   title       String
   description String?  @db.Text
   order       Int
-
+  status      TASK_STATUS @default(NOT_STARTED)
   listId      String
   list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)
 
@@ -71,6 +71,13 @@ enum ENTITY_TYPE {
   LIST
   CARD
 }
+
+enum TASK_STATUS {
+  NOT_STARTED
+  IN_PROGRESS
+  DONE
+}
+
 
 model AuditLog {
   id          String      @id @default(uuid())

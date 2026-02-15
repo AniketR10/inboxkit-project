@@ -70,7 +70,7 @@ export const ListForm = () => {
   return (
     <button
       onClick={enableEditing}
-      className="w-full rounded-none bg-accent text-white p-3 font-bold border-2 border-black shadow-neo hover:bg-highlight hover:text-black hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center gap-x-2"
+      className="w-full rounded-none bg-accent text-white p-3 font-bold border-2 border-black shadow-neo hover:bg-highlight hover:text-black hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center justify-center gap-x-2"
     >
       <span>+</span> Create New List
     </button>
