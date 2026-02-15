@@ -4,10 +4,31 @@ import { useState, useEffect } from "react";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import { ListItem } from "./list-item";
 import { ListForm } from "./list-form";
+import { updateListOrder } from "@/actions/update-list-order";
+import { updateCardOrder } from "@/actions/update-card-order";
+
+interface Task {
+  id: string;
+  title: string;
+  order: number;
+  listId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface List {
+  id: string;
+  title: string;
+  order: number;
+  boardId: string;
+  tasks: Task[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 interface ListContainerProps {
   boardId: string;
-  data: any[];
+  data: List[];
 }
 
 function reorder<T>(list: T[], startIndex: number, endIndex: number) {
@@ -18,7 +39,7 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number) {
 }
 
 export const ListContainer = ({ boardId, data }: ListContainerProps) => {
-  const [orderedData, setOrderedData] = useState(data);
+  const [orderedData, setOrderedData] = useState<List[]>(data);
 
   useEffect(() => {
     setOrderedData(data);
@@ -39,13 +60,12 @@ export const ListContainer = ({ boardId, data }: ListContainerProps) => {
     }
 
     if (type === "list") {
-      const items = reorder(
-        orderedData,
-        source.index,
-        destination.index
+      const items = reorder(orderedData, source.index, destination.index).map(
+        (item, index) => ({ ...item, order: index })
       );
       setOrderedData(items);
-      return;
+      
+      updateListOrder({ items, boardId });
     }
 
     if (type === "task") {
@@ -68,16 +88,29 @@ export const ListContainer = ({ boardId, data }: ListContainerProps) => {
           destination.index
         );
 
+        reorderedTasks.forEach((task, idx) => {
+          task.order = idx;
+        });
+
         sourceList.tasks = reorderedTasks;
-        
         setOrderedData(newOrderedData);
+        
+        updateCardOrder({ items: reorderedTasks, boardId: boardId });
+        
       } else {
         const [movedTask] = sourceList.tasks.splice(source.index, 1);
 
         movedTask.listId = destination.droppableId;
+
         destList.tasks.splice(destination.index, 0, movedTask);
 
+        destList.tasks.forEach((task, idx) => {
+          task.order = idx;
+        });
+
         setOrderedData(newOrderedData);
+        
+        updateCardOrder({ items: destList.tasks, boardId: boardId });
       }
     }
   };
