@@ -19,22 +19,22 @@ export async function createList(formData: FormData) {
         return {error: "Missing fields"};
     }
 
-    try {
-        const lastList = await prisma.list.findFirst({
-            where: {"boardId": boardId},
-            orderBy: {order: "desc"},
-            select: {order: true},
-        });
+   try {
+    const firstList = await prisma.list.findFirst({
+      where: { boardId: boardId },
+      orderBy: { order: "asc" },
+      select: { order: true },
+    });
 
-        const newOrder = lastList ? lastList.order + 1 : 1;
+    const newOrder = firstList ? firstList.order - 1 : 1;
 
-        await prisma.list.create({
-            data: {
-                title,
-                boardId,
-                order: newOrder,
-            },
-        });
+    await prisma.list.create({
+      data: {
+        title,
+        boardId,
+        order: newOrder,
+      },
+    });
         revalidatePath(`/board/${boardId}`);
         return {success: true};
     } catch(err) {

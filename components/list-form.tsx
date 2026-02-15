@@ -35,7 +35,7 @@ export const ListForm = () => {
 
   if (isEditing) {
     return (
-      <div className="shrink-0 w-80 h-full p-3 bg-white border-2 border-black shadow-neo rounded-none">
+      <div className="shrink-0 w-full h-full p-3 bg-white border-2 border-black shadow-neo rounded-none">
         <form
           ref={formRef}
           action={async (formData) => {
@@ -50,7 +50,7 @@ export const ListForm = () => {
             name="title"
             required
             placeholder="Enter list title..."
-            className="w-full border-2 border-black p-2 outline-none focus:shadow-neo transition-all font-bold"
+            className="w-full border-2 border-black p-2 outline-none focus:shadow-neo transition-all font-bold text-sm"
           />
           <div className="flex items-center gap-x-2">
             <SubmitButton />
@@ -70,9 +70,9 @@ export const ListForm = () => {
   return (
     <button
       onClick={enableEditing}
-      className="shrink-0 w-80 h-14 bg-white/50 hover:bg-white transition p-3 flex items-center font-bold border-2 border-transparent hover:border-black hover:shadow-neo text-black"
+      className="w-full rounded-none bg-accent text-white p-3 font-bold border-2 border-black shadow-neo hover:bg-highlight hover:text-black hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center gap-x-2"
     >
-      + Add a list
+      <span>+</span> Create New List
     </button>
   );
 };

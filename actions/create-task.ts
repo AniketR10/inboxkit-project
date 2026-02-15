@@ -1,8 +1,10 @@
 "use server";
 
+import { createAuditLog } from "@/lib/create-audit-log";
 import prisma from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { ENTITY_TYPE, ACTION } from "@/app/generated/prisma/enums";
 
 
 export async function createTask(formData: FormData) {
@@ -29,13 +31,21 @@ export async function createTask(formData: FormData) {
 
         const newOrder = lastTask ? lastTask.order + 1 : 1;
 
-        await prisma.task.create({
+        const task = await prisma.task.create({
             data: {
                 title,
                 listId,
                 order: newOrder,
             },
         });
+
+        await createAuditLog({
+            entityId: task.id,
+            entityTitle: task.title,
+            entityType: ENTITY_TYPE.CARD,
+            action: ACTION.CREATE,
+            boardId: boardId,
+        })
 
         revalidatePath(`/board/${boardId}`);
         return { success: true };
