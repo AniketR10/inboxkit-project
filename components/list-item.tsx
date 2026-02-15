@@ -14,11 +14,17 @@ interface ListItemProps {
 
 export const ListItem = ({ list, index }: ListItemProps) => {
   const params = useParams();
+  
+  // State 1: For Editing the List Title
   const [isEditing, setIsEditing] = useState(false);
+  
+  // State 2: For Adding a New Card (The Fix!)
+  const [isAddingCard, setIsAddingCard] = useState(false);
 
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // --- List Title Logic ---
   const enableEditing = () => {
     setIsEditing(true);
     setTimeout(() => {
@@ -33,12 +39,10 @@ export const ListItem = ({ list, index }: ListItemProps) => {
 
   const onSubmit = async (formData: FormData) => {
     const title = formData.get("title") as string;
-    
     if (title === list.title) {
         disableEditing();
         return;
     }
-    
     formData.append("id", list.id);
     formData.append("boardId", params.boardId as string);
     await updateList(formData);
@@ -46,23 +50,24 @@ export const ListItem = ({ list, index }: ListItemProps) => {
   };
 
   const onDelete = async () => {
-  const confirmed = window.confirm(
-    "Are you sure you want to delete this list? This will delete all tasks inside it."
-  );
-
-  if (!confirmed) return;
-
-  const formData = new FormData();
-  formData.append("id", list.id);
-  formData.append("boardId", params.boardId as string);
-  await deleteList(formData);
-};
-
+    const formData = new FormData();
+    formData.append("id", list.id);
+    formData.append("boardId", params.boardId as string);
+    await deleteList(formData);
+  };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
         formRef.current?.requestSubmit();
     }
+  };
+
+  const enableAddingCard = () => {
+    setIsAddingCard(true);
+  };
+
+  const disableAddingCard = () => {
+    setIsAddingCard(false);
   };
 
   return (
@@ -78,13 +83,8 @@ export const ListItem = ({ list, index }: ListItemProps) => {
             className="w-full rounded-none bg-white border-2 border-black shadow-neo pb-2"
           >
             <div className="flex items-center justify-between px-3 py-3 border-b-2 border-black mb-2 bg-pink-200">
-              
               {isEditing ? (
-                 <form 
-                    action={onSubmit} 
-                    ref={formRef} 
-                    className="flex-1 px-2"
-                 >
+                 <form action={onSubmit} ref={formRef} className="flex-1 px-2">
                     <input 
                        ref={inputRef}
                        onKeyDown={onKeyDown}
@@ -138,9 +138,9 @@ export const ListItem = ({ list, index }: ListItemProps) => {
             <div className="px-2 mt-2">
                <TaskForm
                   listId={list.id}
-                  isEditing={false}
-                  enableEditing={() => {}} 
-                  disableEditing={() => {}}
+                  isEditing={isAddingCard}       
+                  enableEditing={enableAddingCard} 
+                  disableEditing={disableAddingCard}
                />
             </div>
           </div>

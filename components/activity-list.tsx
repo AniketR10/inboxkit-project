@@ -36,7 +36,12 @@ export const ActivityList = async ({ boardId }: ActivityListProps) => {
           <div className="flex flex-col space-y-0.5">
             <p className="text-sm text-neutral-700">
               <span className="font-bold text-black">{log.userName}</span>{" "}
-              {log.action === "CREATE" ? "created" : "updated"}{" "}
+              
+              {log.action === "CREATE" && "created"}
+              {log.action === "UPDATE" && "updated"}
+              {log.action === "DELETE" && "deleted"}
+
+              {" "}
               {log.entityType.toLowerCase()}{" "}
               <span className="font-bold text-black">"{log.entityTitle}"</span>
             </p>
