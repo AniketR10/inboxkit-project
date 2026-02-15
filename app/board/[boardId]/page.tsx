@@ -1,8 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
-import { ListForm } from "@/components/list-form";
-import { ListItem } from "@/components/list-item";
+import { ListContainer } from "@/components/list-container";
 
 interface BoardIdPageProps {
     params: Promise<{
@@ -49,15 +48,8 @@ export default async function BoardIdPage ({
                 {board.title}
             </div>
 
-            <div className="flex gap-x-3 h-full items-start">
-                
-                {board.lists.map((list) => (
-                    <ListItem key={list.id} list={list} />
-                ))}
-
-                <ListForm />
+            <ListContainer boardId={boardId} data={board.lists} />
                 
             </div>
-        </div>
     )
 }
