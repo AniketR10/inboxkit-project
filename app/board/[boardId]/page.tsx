@@ -2,22 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
 import { ListForm } from "@/components/list-form";
-
-function ListItem({list}: {list:any}) {
-    return (
-    <div className="shrink-0 w-80 bg-neutral-100 border-2 border-black shadow-neo p-2 mr-4 h-fit">
-      <div className="flex items-center justify-between px-2 py-2">
-         <h3 className="font-black text-sm">{list.title}</h3>
-         <button className="hover:bg-neutral-200 p-1">...</button>
-      </div>
-      <div className="flex flex-col gap-y-2 mt-2">
-         <p className="text-xs text-center p-2 border-2 border-dashed border-neutral-300">
-            No tasks yet
-         </p>
-      </div>
-    </div>
-  )
-}
+import { ListItem } from "@/components/list-item";
 
 interface BoardIdPageProps {
     params: Promise<{
@@ -43,7 +28,12 @@ export default async function BoardIdPage ({
         },
         include: {
             lists: {
-                orderBy: {order: "asc"}
+                orderBy: {order: "asc"},
+                include: {
+                    tasks: {
+                        orderBy: {order: 'asc'}
+                    }
+                }
             }
         }
     });
