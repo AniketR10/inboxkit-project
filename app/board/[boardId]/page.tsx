@@ -1,6 +1,23 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
+import { ListForm } from "@/components/list-form";
+
+function ListItem({list}: {list:any}) {
+    return (
+    <div className="shrink-0 w-80 bg-neutral-100 border-2 border-black shadow-neo p-2 mr-4 h-fit">
+      <div className="flex items-center justify-between px-2 py-2">
+         <h3 className="font-black text-sm">{list.title}</h3>
+         <button className="hover:bg-neutral-200 p-1">...</button>
+      </div>
+      <div className="flex flex-col gap-y-2 mt-2">
+         <p className="text-xs text-center p-2 border-2 border-dashed border-neutral-300">
+            No tasks yet
+         </p>
+      </div>
+    </div>
+  )
+}
 
 interface BoardIdPageProps {
     params: Promise<{
@@ -24,6 +41,11 @@ export default async function BoardIdPage ({
         where: {
             id: boardId,
         },
+        include: {
+            lists: {
+                orderBy: {order: "asc"}
+            }
+        }
     });
 
     if(!board) {
@@ -31,19 +53,21 @@ export default async function BoardIdPage ({
     }
 
     return (
-        <div className="p-4 h-full bg-slate-50 min-h-screen">
-       <div className="bg-white border-2 border-black p-8 shadow-neo max-w-4xl mx-auto mt-10">
-          <div className="flex items-center justify-between mb-6">
-             <h1 className="text-4xl font-black">{board.title}</h1>
-             <span className="bg-accent text-white px-3 py-1 text-sm font-bold border-2 border-black">
-                BOARD
-             </span>
-          </div>
+       <div className="p-4 h-full min-h-screen bg-accent/20 overflow-x-auto">
+            
+            <div className="font-black text-2xl mb-6 bg-white w-fit px-4 py-2 border-2 border-black shadow-neo">
+                {board.title}
+            </div>
 
-          <p className="text-neutral-600">
-             This is where your lists and tasks will live.
-          </p>
-       </div>
-    </div>
+            <div className="flex gap-x-3 h-full items-start">
+                
+                {board.lists.map((list) => (
+                    <ListItem key={list.id} list={list} />
+                ))}
+
+                <ListForm />
+                
+            </div>
+        </div>
     )
 }
