@@ -14,6 +14,8 @@ export async function updateTask(formData: FormData) {
   const boardId = formData.get("boardId") as string;
   const title = formData.get("title") as string;
   const status = formData.get("status") as TASK_STATUS;
+  const description = formData.get("description") as string;
+  const assignedTo = formData.get("assignedTo") as string;
 
   try {
     const task = await prisma.task.update({
@@ -21,6 +23,8 @@ export async function updateTask(formData: FormData) {
       data: {
         ...(title && { title }),
         ...(status && { status }),
+        ...(description && { description }),
+        ...(assignedTo !== null && { assignedTo }),
       },
     });
 
@@ -40,7 +44,7 @@ export async function updateTask(formData: FormData) {
 }
 
 export async function deleteTask(formData: FormData) {
-  const { userId, orgId } = await auth();
+  const { userId } = await auth();
   if (!userId) return { error: "Unauthorized" };
 
   const id = formData.get("id") as string;

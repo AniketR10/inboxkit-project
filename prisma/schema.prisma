@@ -69,7 +69,7 @@ model Task {
   order       Int
   status      TASK_STATUS @default(NOT_STARTED)
   
-  assigneeTo  String?    
+  assignedTo  String?    
 
   listId      String
   list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)
