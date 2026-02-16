@@ -6,6 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { CreateForm } from "@/components/create-form";
 import { SearchInput } from "@/components/search-input";
 import { DeleteBoardButton } from "@/components/delete-board-btn";
+import { Board } from "@prisma/client";
 
 interface HomeProps {
   searchParams?: Promise<{
@@ -86,7 +87,7 @@ export default async function Home({ searchParams }: HomeProps) {
           <div className="space-y-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               
-             {boards.map((board) => (
+             {boards.map((board: Board) => (
                 <div key={board.id} className="relative group"> 
                   
                   <Link
