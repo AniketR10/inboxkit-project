@@ -6,7 +6,12 @@ import { Navbar } from "@/components/Navbar";
 import { CreateForm } from "@/components/create-form";
 import { SearchInput } from "@/components/search-input";
 import { DeleteBoardButton } from "@/components/delete-board-btn";
-import { Board } from "@prisma/client";
+
+interface Board {
+  id: string;
+  title: string;
+  createdAt: Date;
+}
 
 interface HomeProps {
   searchParams?: Promise<{
