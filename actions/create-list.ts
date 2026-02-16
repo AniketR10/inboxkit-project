@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/db"; 
 import { error } from "console";
 import { revalidatePath } from "next/cache";
-import { ENTITY_TYPE, ACTION } from "@/app/generated/prisma/enums";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 import { createAuditLog } from "@/lib/create-audit-log";
 
 export async function createList(formData: FormData) {

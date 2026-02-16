@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
 import { createAuditLog } from "@/lib/create-audit-log";
-import { ENTITY_TYPE, ACTION, TASK_STATUS } from "@/app/generated/prisma/enums";
+import { ACTION, ENTITY_TYPE, TASK_STATUS } from "@prisma/client";
 
 export async function updateTask(formData: FormData) {
   const { userId, orgId } = await auth();
