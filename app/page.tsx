@@ -64,7 +64,7 @@ export default async function Home({ searchParams }: HomeProps) {
             TASK MANAGEMENT SIMPLIFIED
           </div>
           <h1 className="text-4xl md:text-6xl font-black text-black tracking-tight mb-2">
-            Work Forward.
+            Task Master.
           </h1>
           <p className="text-lg text-neutral-600 max-w-2xl font-medium">
             A lightweight collaboration tool designed for speed. No clutter, just boards.

@@ -17,16 +17,16 @@ model User {
   id            String    @id @default(uuid())
   name          String?
   email         String    @unique
-  password      String?   // Add this! (Nullable for OAuth users)
+  password      String?   
   image         String?
   
-  boards        Board[]   @relation("OwnedBoards") // Boards I own
+  boards        Board[]   @relation("OwnedBoards") 
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
 
-// 2. Update Board to track ownership clearly
+
 model Board {
   id            String    @id @default(uuid())
   title         String
@@ -37,7 +37,7 @@ model Board {
   imageUserName String    @db.Text
   imageLinkHTML String    @db.Text
   
-  ownerId       String    // The Admin
+  ownerId       String   
   owner         User      @relation("OwnedBoards", fields: [ownerId], references: [id])
   
   lists         List[]
