@@ -17,7 +17,7 @@ export async function loginAction(formData: FormData) {
     where: { email },
   });
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
+  if (!user || !user.password || !(await bcrypt.compare(password, user.password))) {
     return { error: "Invalid email or password" };
   }
 
@@ -25,8 +25,47 @@ export async function loginAction(formData: FormData) {
     id: user.id,
     email: user.email,
     name: user.name,
-    role: user.role,
-    image: user.avatar,
+    image: user.image,
+  });
+
+  redirect("/"); 
+}
+
+export async function signupAction(formData: FormData) {
+  const name = formData.get("name") as string;
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  if (!name || !email || !password) {
+    return { error: "Please fill in all fields" };
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (existingUser) {
+    return { error: "User already exists. Please login." };
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const defaultAvatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`;
+
+  const user = await prisma.user.create({
+    data: {
+      name,
+      email,
+      password: hashedPassword,
+      image: defaultAvatar, 
+    },
+  });
+
+  await login({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    image: user.image,
   });
 
   redirect("/");

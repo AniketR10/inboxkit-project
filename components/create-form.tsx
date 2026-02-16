@@ -19,12 +19,28 @@ function SubmitButton() {
 
 export const CreateForm = () => {
   
+  const onSubmit = async (formData: FormData) => {
+    const title = formData.get("title") as string;
+    
+    if (title.length < 3) {
+      alert("Title must be at least 3 characters long");
+      return;
+    }
+
+    try {
+      await createBoard(formData);
+    } catch (error) {
+      alert("Failed to create board. Title might be too short.");
+    }
+  };
+
   return (
-    <form action={createBoard} className="flex flex-col items-center gap-2 w-full max-w-xs">
+    <form action={onSubmit} className="flex flex-col items-center gap-2 w-full max-w-xs">
       <input
         id="title"
         name="title"
         required
+        minLength={3}
         placeholder="Enter board title..."
         className="w-full border-2 border-black p-2 outline-none focus:shadow-neo focus:border-accent transition-all"
       />

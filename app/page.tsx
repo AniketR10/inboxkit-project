@@ -2,40 +2,42 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import prisma from "@/lib/db";
-import { Navbar } from "@/components/Navbar";
+import { Navbar } from "@/components/Navbar"; 
 import { CreateForm } from "@/components/create-form";
 import { SearchInput } from "@/components/search-input";
 import { DeleteBoardButton } from "@/components/delete-board-btn";
 
 interface HomeProps {
-  searchParams?: {
+  searchParams?: Promise<{
     query?: string;
     page?: string;
-  };
+  }>;
 }
 
 export default async function Home({ searchParams }: HomeProps) {
-  const { userId, orgId } = await auth();
-
-  if (!userId) {
-    redirect("/");
+  const session = await auth();
+  
+  if (!session?.userId) {
+    redirect("/login");
   }
+  
+  const userId = session.userId;
 
   const params = await searchParams;
-
   const query = params?.query || "";
   const page = Number(params?.page) || 1;
-
   const PAGE_SIZE = 8;
 
+  const whereCondition = {
+    ownerId: userId,
+    title: {
+      contains: query,
+      mode: "insensitive" as const,
+    }
+  };
+
   const boards = await prisma.board.findMany({
-    where: {
-      orgId: orgId || userId,
-      title: {
-        contains: query,
-        mode: "insensitive",
-      },
-    },
+    where: whereCondition,
     orderBy: {
       createdAt: "desc",
     },
@@ -44,13 +46,7 @@ export default async function Home({ searchParams }: HomeProps) {
   });
 
   const totalBoards = await prisma.board.count({
-    where: {
-      orgId: orgId || userId,
-      title: {
-        contains: query,
-        mode: "insensitive",
-      },
-    },
+    where: whereCondition,
   });
 
   const totalPages = Math.ceil(totalBoards / PAGE_SIZE);
@@ -91,13 +87,13 @@ export default async function Home({ searchParams }: HomeProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               
              {boards.map((board) => (
-                <div key={board.id} className="relative group"> {/* Wrap in a relative div */}
+                <div key={board.id} className="relative group"> 
                   
                   <Link
                     href={`/board/${board.id}`}
-                    className="group relative h-32 bg-white border-2 border-black shadow-neo p-4 flex flex-col justify-between transition-all hover:-translate-y-1 hover:bg-highlight block"
+                    className=" group relative h-32 bg-white border-2 border-black shadow-neo p-4 flex flex-col justify-between transition-all hover:-translate-y-1 hover:bg-highlight"
                   >
-                    <div className="font-black text-lg truncate pr-6"> {/* Add padding right so text doesn't hit button */}
+                    <div className="font-black text-lg truncate pr-6"> 
                       {board.title}
                     </div>
                     <div className="text-xs font-bold text-neutral-400 group-hover:text-black">
@@ -105,24 +101,12 @@ export default async function Home({ searchParams }: HomeProps) {
                     </div>
                   </Link>
 
-                  {/* DELETE BUTTON POSITIONED ABSOLUTE */}
-                  <div className="absolute top-2 right-2">
+                  <div className="absolute top-2 right-2 z-10">
                     <DeleteBoardButton boardId={board.id} />
                   </div>
 
                 </div>
               ))}
-
-              {page === 1 && !query && (
-                <div className="h-32 border-2 border-dashed border-black bg-neutral-100 p-4 flex flex-col items-center justify-center gap-2 opacity-70">
-                  <p className="text-xs font-bold text-center">
-                    Use the form below to create more
-                  </p>
-                  <div className="w-6 h-6 border-2 border-black rounded-full flex items-center justify-center font-bold">
-                    ↓
-                  </div>
-                </div>
-              )}
             </div>
 
             {totalPages > 1 && (
@@ -175,23 +159,25 @@ export default async function Home({ searchParams }: HomeProps) {
                 <p className="text-sm text-neutral-500 mb-6">
                   Start by creating your first workspace
                 </p>
-                <CreateForm />
+                <div className="w-full max-w-xs">
+                  <CreateForm />
+                </div>
               </>
             )}
           </div>
         )}
 
         {!query && boards.length > 0 && (
-        <div className="flex flex-col items-center justify-center mt-20">
-          <h3 className="font-bold text-xl mb-6 bg-white px-6 py-2 border-2 border-black shadow-neo -translate-x-16">
-            Create a New Board
-          </h3>
+          <div className="flex flex-col items-center justify-center mt-20">
+            <h3 className="font-bold text-xl mb-6 bg-white px-6 py-2 border-2 border-black shadow-neo -translate-x-1 lg:-translate-x-0">
+              Create a New Board
+            </h3>
 
-          <div className="w-full max-w-md">
-            <CreateForm />
+            <div className="w-full max-w-md">
+              <CreateForm />
+            </div>
           </div>
-        </div>
-      )}
+        )}
       </main>
     </div>
   );

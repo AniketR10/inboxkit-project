@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 export async function proxy(request: NextRequest) {
   const session = request.cookies.get("session")?.value;
 
-  if (!session && !request.nextUrl.pathname.startsWith("/login") && !request.nextUrl.pathname.startsWith("/sign-up")) {
+  if (!session && !request.nextUrl.pathname.startsWith("/login") && !request.nextUrl.pathname.startsWith("/signup")) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 

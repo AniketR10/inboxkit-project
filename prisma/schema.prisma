@@ -14,31 +14,36 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String   
-  name      String
-  role      String   @default("USER") 
-  avatar    String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String    @id @default(uuid())
+  name          String?
+  email         String    @unique
+  password      String?   // Add this! (Nullable for OAuth users)
+  image         String?
+  
+  boards        Board[]   @relation("OwnedBoards") // Boards I own
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
+// 2. Update Board to track ownership clearly
 model Board {
-  id            String   @id @default(uuid())
-  orgId         String   
+  id            String    @id @default(uuid())
   title         String
-  imageId       String?  
-  imageThumbUrl String?  @db.Text
-  imageFullUrl  String?  @db.Text
-  imageUserName String?  @db.Text
-  imageLinkHTML String?  @db.Text
 
+  imageId       String
+  imageThumbUrl String    @db.Text
+  imageFullUrl  String    @db.Text
+  imageUserName String    @db.Text
+  imageLinkHTML String    @db.Text
+  
+  ownerId       String    // The Admin
+  owner         User      @relation("OwnedBoards", fields: [ownerId], references: [id])
+  
   lists         List[]
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model List {
@@ -64,7 +69,7 @@ model Task {
   order       Int
   status      TASK_STATUS @default(NOT_STARTED)
   
-  assigneeId  String?    
+  assigneeTo  String?    
 
   listId      String
   list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)

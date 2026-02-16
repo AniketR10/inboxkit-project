@@ -13,8 +13,7 @@ async function main() {
       email: "admin@workforward.com",
       name: "Admin User",
       password: hashedPassword,
-      role: "ADMIN",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Admin",
+      image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Admin",
     },
   });
 

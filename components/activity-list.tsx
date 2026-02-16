@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
 import { format } from "date-fns";
+import { User } from "lucide-react";
 
 interface ActivityListProps {
   boardId: string;
@@ -27,29 +28,28 @@ export const ActivityList = async ({ boardId }: ActivityListProps) => {
       )}
 
       {logs.map((log) => (
-        <li key={log.id} className="flex items-center gap-x-2">
-          <img 
-            src={log.userImage} 
-            alt="User" 
-            className="h-8 w-8 rounded-full border-2 border-black"
-          />
-          <div className="flex flex-col space-y-0.5">
-            <p className="text-sm text-neutral-700">
-              <span className="font-bold text-black">{log.userName}</span>{" "}
-              
-              {log.action === "CREATE" && "created"}
-              {log.action === "UPDATE" && "updated"}
-              {log.action === "DELETE" && "deleted"}
+        <div key={log.id} className="flex items-start gap-x-3">
+          <div className="h-8 w-8 shrink-0 bg-neutral-200 border border-black flex items-center justify-center overflow-hidden">
+            {log.userImage ? (
+              <img
+                src={log.userImage}
+                alt={log.userName}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <User className="h-4 w-4 text-neutral-500" />
+            )}
+          </div>
 
-              {" "}
-              {log.entityType.toLowerCase()}{" "}
-              <span className="font-bold text-black">"{log.entityTitle}"</span>
+          <div className="flex flex-col space-y-0.5">
+            <p className="text-sm text-black">
+              <span className="font-bold">{log.userName}</span> {log.action.toLowerCase()} {log.entityType.toLowerCase()} "{log.entityTitle}"
             </p>
-            <p className="text-xs text-neutral-500">
-              {new Date(log.createdAt).toLocaleString()}
+            <p className="text-[10px] text-neutral-500 font-medium">
+              {format(new Date(log.createdAt), "MMM d, yyyy 'at' h:mm a")}
             </p>
           </div>
-        </li>
+        </div>
       ))}
     </ol>
   );

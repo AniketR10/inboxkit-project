@@ -24,13 +24,16 @@ export async function createBoard(formData: FormData) {
   const validatedFields = CreateBoard.safeParse({ title });
 
   if (!validatedFields.success) {
-    throw new Error("Invalid Fields");
+    return { 
+      error: "Invalid Fields" 
+    };
   }
 
-  const board = await prisma.board.create({
+  try {
+      const board = await prisma.board.create({
     data: {
       title,
-      orgId: orgId || userId,
+      ownerId: userId,
       imageId: "unsplash-placeholder",
       imageThumbUrl: "https://placehold.co/600x400/png",
       imageFullUrl: "https://placehold.co/600x400/png",
@@ -39,6 +42,10 @@ export async function createBoard(formData: FormData) {
     },
   });
 
-  revalidatePath("/");
+    revalidatePath("/");
   redirect(`/board/${board.id}`);
+  }catch(err){
+    return { error: "Failed to create board." };
+  }
+
 }
