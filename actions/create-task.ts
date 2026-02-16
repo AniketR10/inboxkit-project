@@ -4,7 +4,7 @@ import { createAuditLog } from "@/lib/create-audit-log";
 import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-import { ACTION, ENTITY_TYPE } from "@prisma/client";
+// import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 
 export async function createTask(formData: FormData) {
@@ -42,8 +42,8 @@ export async function createTask(formData: FormData) {
         await createAuditLog({
             entityId: task.id,
             entityTitle: task.title,
-            entityType: ENTITY_TYPE.CARD,
-            action: ACTION.CREATE,
+            entityType: "CARD",
+            action: "CREATE",
             boardId: boardId,
         })
 

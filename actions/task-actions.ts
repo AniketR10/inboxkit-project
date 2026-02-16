@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
 import { createAuditLog } from "@/lib/create-audit-log";
-import { ACTION, ENTITY_TYPE, TASK_STATUS } from "@prisma/client";
+ import type { TASK_STATUS } from "@prisma/client";
 
 export async function updateTask(formData: FormData) {
   const { userId, orgId } = await auth();
@@ -31,8 +31,8 @@ export async function updateTask(formData: FormData) {
     await createAuditLog({
       entityId: task.id,
       entityTitle: task.title,
-      entityType: ENTITY_TYPE.CARD,
-      action: ACTION.UPDATE,
+      entityType: "CARD",
+      action: "UPDATE",
       boardId,
     });
 
@@ -58,8 +58,8 @@ export async function deleteTask(formData: FormData) {
     await createAuditLog({
       entityId: task.id,
       entityTitle: task.title,
-      entityType: ENTITY_TYPE.CARD,
-      action: ACTION.DELETE,
+      entityType: "CARD",
+      action: "DELETE",
       boardId,
     });
 

@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
 import { createAuditLog } from "@/lib/create-audit-log";
-import { ACTION, ENTITY_TYPE } from "@prisma/client";
+// import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 export async function updateList(formData: FormData) {
   const { userId } = await auth();
@@ -37,8 +37,8 @@ export async function deleteList(formData: FormData) {
   await createAuditLog({
     entityId: list.id,
     entityTitle: list.title,
-    entityType: ENTITY_TYPE.LIST,
-    action: ACTION.DELETE,
+    entityType: "LIST",
+    action: "DELETE",
     boardId,
   });
 
