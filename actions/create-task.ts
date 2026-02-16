@@ -2,7 +2,7 @@
 
 import { createAuditLog } from "@/lib/create-audit-log";
 import prisma from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { ENTITY_TYPE, ACTION } from "@/app/generated/prisma/enums";
 

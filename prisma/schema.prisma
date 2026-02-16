@@ -13,11 +13,23 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   
+  name      String
+  role      String   @default("USER") 
+  avatar    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Board {
   id            String   @id @default(uuid())
-  orgId         String   // From Clerk Auth (to group boards per user/org)
+  orgId         String   
   title         String
-  imageId       String?  // For board background images
+  imageId       String?  
   imageThumbUrl String?  @db.Text
   imageFullUrl  String?  @db.Text
   imageUserName String?  @db.Text
@@ -51,6 +63,9 @@ model Task {
   description String?  @db.Text
   order       Int
   status      TASK_STATUS @default(NOT_STARTED)
+  
+  assigneeId  String?    
+
   listId      String
   list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)
 
@@ -77,7 +92,6 @@ enum TASK_STATUS {
   IN_PROGRESS
   DONE
 }
-
 
 model AuditLog {
   id          String      @id @default(uuid())

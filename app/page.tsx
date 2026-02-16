@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import prisma from "@/lib/db";
@@ -173,7 +173,7 @@ export default async function Home({ searchParams }: HomeProps) {
           </div>
         )}
 
-        {!query && (
+        {!query && boards.length > 0 && (
         <div className="flex flex-col items-center justify-center mt-20">
           <h3 className="font-bold text-xl mb-6 bg-white px-6 py-2 border-2 border-black shadow-neo -translate-x-16">
             Create a New Board

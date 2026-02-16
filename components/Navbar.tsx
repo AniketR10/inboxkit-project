@@ -1,40 +1,52 @@
-import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
+import { auth } from "@/lib/auth"; 
+import { logoutAction } from "@/actions/logout";
 
-export const Navbar = () => {
+export const Navbar = async () => {
+  const session = await auth();
+  const user = session?.user;
+
   return (
-    <nav className="fixed z-50 top-0 px-4 w-full h-14 bg-white border-b-2 border-black flex items-center justify-between">
-      <div className="flex items-center gap-x-4">
-        <Link href="/" className="flex items-center gap-x-2 group">
-          <div className="h-8 w-8 bg-accent text-white flex items-center justify-center font-bold text-lg border-2 border-black group-hover:bg-highlight group-hover:text-black transition-colors">
-            H
+    <div className="fixed top-0 w-full h-14 px-4 border-b shadow-sm bg-white flex items-center z-50">
+      <div className="md:max-w-screen-2xl mx-auto flex items-center w-full justify-between">
+        
+        <div className="hidden md:flex">
+          <Link href="/" className="font-black text-xl tracking-tighter hover:opacity-75 transition">
+            TASK MASTER
+          </Link>
+        </div>
+
+        <div className="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end">
+          
+          <div className="flex items-center gap-x-2">
+             <Link 
+               href="/" 
+               className="hidden md:block bg-black text-white text-sm font-bold py-1.5 px-3 rounded-sm hover:opacity-80 transition"
+             >
+               My Boards
+             </Link>
           </div>
-          <span className="font-bold text-xl tracking-tight hidden md:block group-hover:text-accent transition-colors">
-            Hintero
-          </span>
-        </Link>
-      </div>
 
-      <div className="flex items-center gap-x-2">
-        <SignedOut>
-          <SignInButton mode="modal">
-            <button className="h-auto rounded-none border-2 border-black bg-white px-4 py-2 text-sm font-bold text-black shadow-neo transition-all hover:bg-highlight hover:-translate-y-1">
-              Login
-            </button>
-          </SignInButton>
-        </SignedOut>
+          <div className="flex items-center gap-x-3">
+             {user && (
+               <div className="flex items-center gap-x-2">
+                  <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs border-2 border-black">
+                      {user.name ? user.name[0].toUpperCase() : "U"}
+                  </div>
+                  <span className="text-sm font-bold hidden md:block">
+                    {user.name}
+                  </span>
+               </div>
+             )}
 
-        <SignedIn>
-          <UserButton 
-            afterSignOutUrl="/" 
-            appearance={{
-              elements: {
-                avatarBox: "h-10 w-10 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-              }
-            }}
-          />
-        </SignedIn>
+             <form action={logoutAction}>
+                <button className="text-xs font-bold uppercase tracking-wider text-neutral-500 hover:text-red-600 border-l-2 border-neutral-200 pl-3 ml-2 transition-colors">
+                   Log out
+                </button>
+             </form>
+          </div>
+        </div>
       </div>
-    </nav>
+    </div>
   );
 };
