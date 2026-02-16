@@ -6,7 +6,6 @@ import { Navbar } from "@/components/Navbar";
 import { CreateForm } from "@/components/create-form";
 import { SearchInput } from "@/components/search-input";
 import { DeleteBoardButton } from "@/components/delete-board-btn";
-import type { Board } from "@prisma/client";
 
 interface HomeProps {
   searchParams?: Promise<{
@@ -37,7 +36,7 @@ export default async function Home({ searchParams }: HomeProps) {
     }
   };
 
-  const boards: Board[] = await prisma.board.findMany({
+  const boards = await prisma.board.findMany({
     where: whereCondition,
     orderBy: {
       createdAt: "desc",
