@@ -50,10 +50,16 @@ export const ListItem = ({ list, index }: ListItemProps) => {
   };
 
   const onDelete = async () => {
+    const confirmed = window.confirm("Are you sure you want to delete this list?");
+    
+    if (!confirmed) {
+      return; 
+    }
+
     const formData = new FormData();
     formData.append("id", list.id);
     formData.append("boardId", params.boardId as string);
-    await deleteList(formData);
+    await deleteList(formData); 
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {

@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { Draggable } from "@hello-pangea/dnd";
 import { updateTask, deleteTask } from "@/actions/task-actions";
 import { useParams } from "next/navigation";
+import { Trash2 } from "lucide-react";
 
 interface TaskCardProps {
   task: any;
@@ -91,7 +92,7 @@ export const TaskCard = ({ task, index }: TaskCardProps) => {
                     className="text-neutral-400 opacity-0 group-hover:opacity-100 
                             hover:text-red-600 hover:scale-125 hover:cursor-pointer transition-all"
                 >
-                    🗑️
+                  <Trash2 size={18} />
                 </button>
                 )}
 

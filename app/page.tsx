@@ -5,6 +5,7 @@ import prisma from "@/lib/db";
 import { Navbar } from "@/components/Navbar";
 import { CreateForm } from "@/components/create-form";
 import { SearchInput } from "@/components/search-input";
+import { DeleteBoardButton } from "@/components/delete-board-btn";
 
 interface HomeProps {
   searchParams?: {
@@ -20,7 +21,6 @@ export default async function Home({ searchParams }: HomeProps) {
     redirect("/");
   }
 
-  // ✅ Unwrap ONCE
   const params = await searchParams;
 
   const query = params?.query || "";
@@ -90,19 +90,27 @@ export default async function Home({ searchParams }: HomeProps) {
           <div className="space-y-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               
-              {boards.map((board) => (
-                <Link
-                  key={board.id}
-                  href={`/board/${board.id}`}
-                  className="group relative h-32 bg-white border-2 border-black shadow-neo p-4 flex flex-col justify-between transition-all hover:-translate-y-1 hover:bg-highlight"
-                >
-                  <div className="font-black text-lg truncate pr-2">
-                    {board.title}
+             {boards.map((board) => (
+                <div key={board.id} className="relative group"> {/* Wrap in a relative div */}
+                  
+                  <Link
+                    href={`/board/${board.id}`}
+                    className="group relative h-32 bg-white border-2 border-black shadow-neo p-4 flex flex-col justify-between transition-all hover:-translate-y-1 hover:bg-highlight block"
+                  >
+                    <div className="font-black text-lg truncate pr-6"> {/* Add padding right so text doesn't hit button */}
+                      {board.title}
+                    </div>
+                    <div className="text-xs font-bold text-neutral-400 group-hover:text-black">
+                      Created {new Date(board.createdAt).toLocaleDateString()}
+                    </div>
+                  </Link>
+
+                  {/* DELETE BUTTON POSITIONED ABSOLUTE */}
+                  <div className="absolute top-2 right-2">
+                    <DeleteBoardButton boardId={board.id} />
                   </div>
-                  <div className="text-xs font-bold text-neutral-400 group-hover:text-black">
-                    Created {new Date(board.createdAt).toLocaleDateString()}
-                  </div>
-                </Link>
+
+                </div>
               ))}
 
               {page === 1 && !query && (
