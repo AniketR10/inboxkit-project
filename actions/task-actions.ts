@@ -4,7 +4,6 @@ import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
 import { createAuditLog } from "@/lib/create-audit-log";
- import type { TASK_STATUS } from "@prisma/client";
 
 export async function updateTask(formData: FormData) {
   const { userId, orgId } = await auth();
@@ -13,7 +12,7 @@ export async function updateTask(formData: FormData) {
   const id = formData.get("id") as string;
   const boardId = formData.get("boardId") as string;
   const title = formData.get("title") as string;
-  const status = formData.get("status") as TASK_STATUS;
+  const status = formData.get("status") as any;
   const description = formData.get("description") as string;
   const assignedTo = formData.get("assignedTo") as string;
 
