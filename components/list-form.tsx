@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { createList } from "@/actions/create-list";
 import { useParams } from "next/navigation";
+import { useSocket } from "@/hooks/use-socket";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -21,11 +22,13 @@ export const ListForm = () => {
   const params = useParams();
   const [isEditing, setIsEditing] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const { emitChange } = useSocket(params.boardId as string);
 
   const enableEditing = () => {
     setIsEditing(true);
     setTimeout(() => {
-      formRef.current?.querySelector("input")?.focus();
+      const input = formRef.current?.querySelector("input");
+      if (input) (input as HTMLInputElement).focus();
     });
   };
 
@@ -35,15 +38,22 @@ export const ListForm = () => {
 
   if (isEditing) {
     return (
-      <div className="shrink-0 w-full h-full p-3 bg-white border-2 border-black shadow-neo rounded-none">
+      <div className="shrink-0 w-full h-fit p-3 bg-white border-2 border-black shadow-neo rounded-none mb-4">
         <form
           ref={formRef}
           action={async (formData) => {
+             const title = formData.get("title") as string;
+             if (!title || title.trim() === "") return;
+
              formData.append("boardId", params.boardId as string);
+             
              await createList(formData);
+             
+             emitChange(); 
+             
              disableEditing();
           }}
-          className="space-y-4"
+          className="space-y-3"
         >
           <input
             id="title"
@@ -57,7 +67,7 @@ export const ListForm = () => {
             <button
               onClick={disableEditing}
               type="button"
-              className="px-4 py-2 text-sm font-bold hover:underline"
+              className="px-3 py-2 text-sm font-bold hover:underline"
             >
               Cancel
             </button>

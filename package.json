@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
+  "dev": "ts-node --project tsconfig.server.json server.ts",
+  "build": "next build && tsc --project tsconfig.server.json",
+  "start": "NODE_ENV=production node dist/server.js",
+  "lint": "next lint"
+},
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
@@ -24,7 +24,9 @@
     "next": "16.1.6",
     "pg": "^8.18.0",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

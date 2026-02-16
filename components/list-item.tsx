@@ -6,6 +6,7 @@ import { TaskForm } from "./task-form";
 import { TaskCard } from "./task-card";
 import { updateList, deleteList } from "@/actions/list-actions";
 import { useParams } from "next/navigation";
+import { useSocket } from "@/hooks/use-socket";
 
 interface ListItemProps {
   list: any;
@@ -15,16 +16,14 @@ interface ListItemProps {
 export const ListItem = ({ list, index }: ListItemProps) => {
   const params = useParams();
   
-  // State 1: For Editing the List Title
+  const { emitChange } = useSocket(params.boardId as string);
+
   const [isEditing, setIsEditing] = useState(false);
-  
-  // State 2: For Adding a New Card (The Fix!)
   const [isAddingCard, setIsAddingCard] = useState(false);
 
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // --- List Title Logic ---
   const enableEditing = () => {
     setIsEditing(true);
     setTimeout(() => {
@@ -39,13 +38,18 @@ export const ListItem = ({ list, index }: ListItemProps) => {
 
   const onSubmit = async (formData: FormData) => {
     const title = formData.get("title") as string;
+    
     if (title === list.title) {
         disableEditing();
         return;
     }
+    
     formData.append("id", list.id);
     formData.append("boardId", params.boardId as string);
+    
     await updateList(formData);
+    emitChange();
+    
     disableEditing();
   };
 
@@ -59,7 +63,9 @@ export const ListItem = ({ list, index }: ListItemProps) => {
     const formData = new FormData();
     formData.append("id", list.id);
     formData.append("boardId", params.boardId as string);
-    await deleteList(formData); 
+    
+    await deleteList(formData);
+    emitChange();
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {

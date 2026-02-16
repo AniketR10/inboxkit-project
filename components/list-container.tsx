@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
+import { useRouter } from "next/navigation";
 import { ListItem } from "./list-item";
-import { ListForm } from "./list-form";
+import { ListForm } from "./list-form"; 
 import { updateListOrder } from "@/actions/update-list-order";
 import { updateCardOrder } from "@/actions/update-card-order";
+import { useSocket } from "@/hooks/use-socket";
 
 interface Task {
   id: string;
@@ -39,13 +41,31 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number) {
 }
 
 export const ListContainer = ({ boardId, data }: ListContainerProps) => {
+  const router = useRouter();
+  const { socket, emitChange } = useSocket(boardId);
+
   const [orderedData, setOrderedData] = useState<List[]>(data);
 
   useEffect(() => {
     setOrderedData(data);
   }, [data]);
 
-  const onDragEnd = (result: any) => {
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleRefresh = () => {
+      console.log(" Board updated by another user. Refreshing...");
+      router.refresh();
+    };
+
+    socket.on("refresh-board", handleRefresh);
+
+    return () => {
+      socket.off("refresh-board", handleRefresh);
+    };
+  }, [socket, router]);
+
+  const onDragEnd = async (result: any) => {
     const { destination, source, type } = result;
 
     if (!destination) {
@@ -65,7 +85,8 @@ export const ListContainer = ({ boardId, data }: ListContainerProps) => {
       );
       setOrderedData(items);
       
-      updateListOrder({ items, boardId });
+      await updateListOrder({ items, boardId });
+      emitChange(); 
     }
 
     if (type === "task") {
@@ -95,7 +116,8 @@ export const ListContainer = ({ boardId, data }: ListContainerProps) => {
         sourceList.tasks = reorderedTasks;
         setOrderedData(newOrderedData);
         
-        updateCardOrder({ items: reorderedTasks, boardId: boardId });
+        await updateCardOrder({ items: reorderedTasks, boardId: boardId });
+        emitChange();
         
       } else {
         const [movedTask] = sourceList.tasks.splice(source.index, 1);
@@ -110,7 +132,8 @@ export const ListContainer = ({ boardId, data }: ListContainerProps) => {
 
         setOrderedData(newOrderedData);
         
-        updateCardOrder({ items: destList.tasks, boardId: boardId });
+        await updateCardOrder({ items: destList.tasks, boardId: boardId });
+        emitChange();
       }
     }
   };
@@ -122,7 +145,7 @@ export const ListContainer = ({ boardId, data }: ListContainerProps) => {
           <ol
             {...provided.droppableProps}
             ref={provided.innerRef}
-            className="flex flex-col gap-y-4 h-full pb-10" 
+            className="flex flex-col gap-y-2 h-full pb-10" 
           >
             {orderedData.map((list, index) => (
               <ListItem key={list.id} index={index} list={list} />
