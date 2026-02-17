@@ -1,5 +1,5 @@
 import { auth, currentUser } from "@/lib/auth";
-import { ENTITY_TYPE, ACTION } from "@/app/generated/prisma/enums";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 import prisma from "@/lib/db";
 
 interface Props {
