@@ -1,6 +1,18 @@
-import { auth, currentUser } from "@/lib/auth";
-import { ACTION, ENTITY_TYPE } from "@prisma/client";
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { ENTITY_TYPE, ACTION } from "@prisma/client";
+
+// export enum ACTION {
+//   CREATE = "CREATE",
+//   UPDATE = "UPDATE",
+//   DELETE = "DELETE"
+// }
+
+// export enum ENTITY_TYPE {
+//   BOARD = "BOARD",
+//   LIST = "LIST",
+//   CARD = "CARD"
+// }
 
 interface Props {
   entityId: string;
