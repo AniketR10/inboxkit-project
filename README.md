@@ -181,8 +181,8 @@ The project will be available at: http://localhost:3000
 
 ### 📝 Demo Credentials
 ```bash
- Email: test@example.com
- Password: password123
+ Email: admin@gmail.com
+ Password: admin123
 ```
 
 Use these to login and test or you can singnIn wioth your own email and password also.
