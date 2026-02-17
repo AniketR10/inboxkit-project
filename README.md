@@ -6,6 +6,7 @@ Task Master is a lightweight Trello/Notion-style task management platform with r
 Users can create boards, manage lists and tasks, assign members, and see live updates instantly.
 
 ## 🚀 Live Features
+<video controls src="hintro-demo-aniket.mp4" title="Title"></video>
 
 ### 🔐 Authentication
 - Signup & Login
