@@ -12,28 +12,27 @@ interface Props {
 
 export const createAuditLog = async (props: Props) => {
   try {
-    const { orgId: clerkOrgId } = await auth();
-    const user = await currentUser();
+    const session = await auth(); 
+    const user = session?.user;  
 
-    if (!user) {
+    if (!user || !user.id) {
       throw new Error("User not found!");
     }
 
-    const orgId = clerkOrgId || user.id;
 
     const { entityId, entityType, entityTitle, action, boardId } = props;
 
     await prisma.auditLog.create({
       data: {
-        orgId,
+        orgId: user.id,
         entityId,
         entityType,
         entityTitle,
         action,
         boardId,
         userId: user.id,
-        userImage: user?.imageUrl,
-        userName: user?.firstName + " " + user?.lastName,
+        userImage: user.image || "",
+        userName: user.name || "unknown user",
       },
     });
   } catch (error) {
