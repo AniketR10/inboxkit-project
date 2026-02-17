@@ -1,8 +1,18 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
 import { format } from "date-fns";
 import { User } from "lucide-react";
+
+interface AuditLog {
+  id: string;
+  action: string;
+  entityId: string;
+  entityType: string;
+  entityTitle: string;
+  userId: string;
+  userImage: string;
+  userName: string;
+  createdAt: Date;
+}
 
 interface ActivityListProps {
   boardId: string;
@@ -27,7 +37,7 @@ export const ActivityList = async ({ boardId }: ActivityListProps) => {
          <p className="text-sm text-neutral-500">No activity yet.</p>
       )}
 
-      {logs.map((log) => (
+      {logs.map((log: AuditLog) => (
         <div key={log.id} className="flex items-start gap-x-3">
           <div className="h-8 w-8 shrink-0 bg-neutral-200 border border-black flex items-center justify-center overflow-hidden">
             {log.userImage ? (
