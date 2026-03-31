@@ -1,4 +1,4 @@
-# Task Master: Real-Time Task Collaboration Platform (Hintro-project)
+# Task Master: Real-Time Task Collaboration Platform
 ![home-page](image.png)
 
 Task Master is a lightweight Trello/Notion-style task management platform with real-time collaboration.
@@ -7,7 +7,6 @@ Users can create boards, manage lists and tasks, assign members, and see live up
 
 ## 🚀 Live Features
 
-<video controls src="hintro-demo-aniket.mp4" title="Title"></video>
 
 ### 🔐 Authentication
 - Signup & Login
