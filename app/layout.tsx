@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "hintero project",
-  description: "this is a hintero project clone similiar trello/notion ",
+  title: "inboxkit project",
+  description: "this is a inboxkit project clone similiar trello/notion ",
 };
 
 export default function RootLayout({
