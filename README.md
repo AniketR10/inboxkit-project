@@ -150,8 +150,8 @@ Refetch: Receiving clients trigger a non-blocking router.refresh(), fetching the
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/AniketR10/hintro-project
-cd hintro-project
+git clone https://github.com/AniketR10/inboxkit-project
+cd inboxkit-project
 ```
 
 ### 2. Install Dependencies
